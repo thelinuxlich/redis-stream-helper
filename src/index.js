@@ -42,7 +42,8 @@ export default (host = "localhost", port = 6379) => {
       const [streamId, ...fields] = data
       const kv = R.fromPairs(arrayToPairs(fields[0]))
       console.log("data", key, streamId, kv)
-      return fn(key, streamId, kv)
+      fn(key, streamId, kv)
+      return redis.xack(key, CONSUMERGROUP, streamId)
     }
   return {
     addStreamData(type, atom, status, data) {
