@@ -1,6 +1,6 @@
 import Redis from "ioredis"
 import * as R from "ramda"
-import { map, tryCatch, pipe, reduce, curry, filter, flatMap } from "rubico"
+import { map, tryCatch, pipe, reduce, curry, filter } from "rubico"
 
 export default (host = "localhost", port = 6379) => {
   const redis = new Redis(port, host)
@@ -26,7 +26,7 @@ export default (host = "localhost", port = 6379) => {
           (_) => createGroup(stream)
         )
       )(stream),
-    (stream) => createGroup(stream)
+    createGroup
   )
 
   const arrayToPairs = reduce((result, _, index, array) => {
@@ -53,6 +53,7 @@ export default (host = "localhost", port = 6379) => {
         ...Object.entries(data).flat()
       )
     },
+    client: redis,
     addStreams,
     addNewStream(type, atom) {
       const newStreams = addStreams(type, atom)
