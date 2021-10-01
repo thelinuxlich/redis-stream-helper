@@ -7,7 +7,6 @@ export default (host = "localhost", port = 6379) => {
   const STANDARD_STATUSES = ["complete", "trigger"]
   const CONSUMERGROUP = "consumers"
   const CONSUMERNAME = "consumer"
-  const ATOMS = ["http", "db", "data"]
   const STREAMARGS = () => map((_) => ">")(Array(STREAMS.length))
 
   const addStreams = (type, atom) =>
@@ -37,21 +36,6 @@ export default (host = "localhost", port = 6379) => {
     return result
   }, [])
 
-  try {
-    const streams = await redis.scan("0", "type", "STREAM")
-    STREAMS = [
-      ...new Set(
-        pipe(
-          flatMap((a) => addStreams("atom", a)),
-          (result) => [...result, ...STANDARD_STREAMS, ...streams[1]]
-        )(ATOMS)
-      ),
-    ]
-    await Promise.all(map(getGroups)(STREAMS))
-  } catch (e) {
-    console.error("Stream error", e)
-    process.exit(1)
-  }
   const processStreamKey =
     (fn) =>
     ([key, data]) => {
@@ -68,12 +52,13 @@ export default (host = "localhost", port = 6379) => {
         ...Object.entries(data).flat()
       )
     },
+    addStreams,
     addNewStream(type, atom) {
       const newStreams = addStreams(type, atom)
       STREAMS = [...newStreams, ...STREAMS]
       return Promise.all(map(getGroups)(newStreams))
     },
-    listenForMessages(fn) {
+    listenForMessagesfn(fn) {
       const messages = await redis.xreadgroup(
         "GROUP",
         CONSUMERGROUP,
