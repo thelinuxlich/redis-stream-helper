@@ -1,0 +1,24 @@
+{
+  "name": "redis-stream-helper",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thelinuxlich/redis-stream-helper.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/thelinuxlich/redis-stream-helper/issues"
+  },
+  "homepage": "https://github.com/thelinuxlich/redis-stream-helper#readme",
+  "dependencies": {
+    "ioredis": "^4.27.9",
+    "ramda": "^0.27.1",
+    "rubico": "^1.8.1"
+  }
+}
