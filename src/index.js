@@ -6,6 +6,7 @@ export default (host = "localhost", port = 6379) => {
   const STANDARD_STATUSES = ["complete", "trigger"]
   const CONSUMERGROUP = "consumers"
   const CONSUMERNAME = "consumer"
+  let STREAMS = []
   const STREAMARGS = () => Array(STREAMS.length).fill(">")
 
   const addStreams = (type, atom) =>
