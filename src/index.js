@@ -62,7 +62,7 @@ export default (host = "localhost", port = 6379) => {
     addListener(type, name, status) {
       STREAMS = [...STREAMS, `${type}:${name}:${status}`]
     },
-    listenForMessagesfn(fn) {
+    async listenForMessagesfn(fn) {
       const messages = await redis.xreadgroup(
         "GROUP",
         CONSUMERGROUP,
