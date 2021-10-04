@@ -58,8 +58,7 @@ export default (host = "localhost", port = 6379) => {
     client: redis,
     addStreams,
     addNewStream(type, name) {
-      const newStreams = addStreams(type, name)
-      return Promise.all(map(getGroups)(newStreams))
+      return map(getGroups)(addStreams(type, name))
     },
     addListener(type, name, status) {
       STREAMS = [...STREAMS, `${type}:${name}:${status}`]
