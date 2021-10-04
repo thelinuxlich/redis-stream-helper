@@ -24,7 +24,7 @@ export default (host = "localhost", port = 6379) => {
   const processStreamKey =
     (fn) =>
     ([key, data]) => {
-      const [streamId, ...fields] = data
+      const [streamId, ...fields] = data[0]
       const kv = R.fromPairs(
         fields[0].reduce((result, _, index, array) => {
           if (index % 2 === 0) {
