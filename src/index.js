@@ -55,10 +55,12 @@ export default (host = "localhost", port = 6379) => {
     },
     client: redis,
     addStreams,
-    addNewStream(type, atom) {
-      const newStreams = addStreams(type, atom)
-      STREAMS = [...newStreams, ...STREAMS]
+    addNewStream(type, name) {
+      const newStreams = addStreams(type, name)
       return Promise.all(map(getGroups)(newStreams))
+    },
+    addListener(type, name, status) {
+      STREAMS = [...STREAMS, `${type}:${name}:${status}`]
     },
     listenForMessagesfn(fn) {
       const messages = await redis.xreadgroup(
