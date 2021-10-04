@@ -1,6 +1,8 @@
 import Redis from "ioredis"
 import * as R from "ramda"
-import { map, tryCatch, pipe, reduce, curry, filter } from "rubico/es"
+import rubico from "rubico"
+
+const { map, tryCatch, pipe, reduce, curry, filter } = rubico
 
 export default (host = "localhost", port = 6379) => {
   const redis = new Redis(port, host)
