@@ -3,19 +3,15 @@ import * as R from "ramda"
 
 export default (host = "localhost", port = 6379) => {
   const redis = new Redis(port, host)
-  const STANDARD_STATUSES = ["complete", "trigger"]
   const CONSUMERGROUP = "consumers"
   const CONSUMERNAME = "consumer"
   let STREAMS = []
   const STREAMARGS = () => Array(STREAMS.length).fill(">")
 
-  const addStreams = (type, atom) =>
-    STANDARD_STATUSES.map((s) => `${type}:${atom}:${s}`)
-
   const createGroup = (stream) =>
     redis.xgroup("CREATE", stream, CONSUMERGROUP, 0, "MKSTREAM")
 
-  const getGroups = async (stream) => {
+  const createStreamGroup = async (stream) => {
     try {
       const groupInfo = await redis.xinfo("GROUPS", stream)
       const hasGroup = groupInfo.some((g) => g[1] === CONSUMERGROUP)
@@ -42,20 +38,13 @@ export default (host = "localhost", port = 6379) => {
       return redis.xack(key, CONSUMERGROUP, streamId)
     }
   return {
-    addStreamData(type, atom, status, data) {
-      redis.xadd(
-        `${type}:${atom}:${status}`,
-        "*",
-        ...Object.entries(data).flat()
-      )
+    addStreamData(streamName, data) {
+      return redis.xadd(streamName, "*", ...Object.entries(data).flat())
     },
     client: redis,
-    addStreams,
-    addNewStream(type, name) {
-      return Promise.all(addStreams(type, name).map(getGroups))
-    },
-    addListener(type, name, status) {
-      STREAMS = [...STREAMS, `${type}:${name}:${status}`]
+    createStreamGroup,
+    addListener(streamName) {
+      STREAMS = [...STREAMS, streamName]
     },
     async listenForMessages(fn) {
       const messages = await redis.xreadgroup(
