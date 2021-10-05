@@ -3,17 +3,18 @@ import * as R from "ramda"
 
 export default (host = "localhost", port = 6379) => {
   const redis = new Redis(port, host)
+  const unblockedRedis = new Redis(port, host)
   const CONSUMERGROUP = "consumers"
   const CONSUMERNAME = "consumer"
   let STREAMS = []
   const STREAMARGS = () => Array(STREAMS.length).fill(">")
 
   const createGroup = (stream) =>
-    redis.xgroup("CREATE", stream, CONSUMERGROUP, 0, "MKSTREAM")
+    unblockedRedis.xgroup("CREATE", stream, CONSUMERGROUP, 0, "MKSTREAM")
 
   const createStreamGroup = async (stream) => {
     try {
-      const groupInfo = await redis.xinfo("GROUPS", stream)
+      const groupInfo = await unblockedRedis.xinfo("GROUPS", stream)
       const hasGroup = groupInfo.some((g) => g[1] === CONSUMERGROUP)
       return hasGroup ? true : createGroup(stream)
     } catch (e) {
@@ -35,17 +36,17 @@ export default (host = "localhost", port = 6379) => {
       )
       console.log("data", key, streamId, kv)
       fn(key, streamId, kv)
-      return redis.xack(key, CONSUMERGROUP, streamId)
+      return unblockedRedis.xack(key, CONSUMERGROUP, streamId)
     }
   return {
     addStreamData(streamName, data) {
-      return redis.xadd(
+      return unblockedRedis.xadd(
         streamName,
         "*",
         ...(Array.isArray(data) ? data : Object.entries(data).flat())
       )
     },
-    client: redis,
+    client: unblockedRedis,
     createStreamGroup,
     addListener(streamName) {
       STREAMS = [...STREAMS, streamName]
