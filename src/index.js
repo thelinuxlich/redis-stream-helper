@@ -39,7 +39,11 @@ export default (host = "localhost", port = 6379) => {
     }
   return {
     addStreamData(streamName, data) {
-      return redis.xadd(streamName, "*", ...Object.entries(data).flat())
+      return redis.xadd(
+        streamName,
+        "*",
+        ...(Array.isArray(data) ? data : Object.entries(data).flat())
+      )
     },
     client: redis,
     createStreamGroup,
