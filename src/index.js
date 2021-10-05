@@ -34,7 +34,6 @@ export default (host = "localhost", port = 6379) => {
           return result
         }, [])
       )
-      console.log("data", key, streamId, kv)
       fn(key, streamId, kv)
       return unblockedRedis.xack(key, CONSUMERGROUP, streamId)
     }
