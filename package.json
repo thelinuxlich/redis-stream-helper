@@ -19,7 +19,6 @@
   "homepage": "https://github.com/thelinuxlich/redis-stream-helper#readme",
   "dependencies": {
     "ioredis": "^4.27.9",
-    "ramda": "^0.27.1",
-    "rubico": "^1.8.1"
+    "ramda": "^0.27.1"
   }
 }
